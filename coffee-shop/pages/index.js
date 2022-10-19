@@ -4,12 +4,15 @@ import Banner from "../components/Banner"
 import Card from "../components/Card"
 
 import coffeeStoresData from "../data/coffee-stores.json"
+import { fetchCoffeeStores } from "../lib/coffee-stores"
 import styles from "../styles/Home.module.css"
 
 export async function getStaticProps() {
+  const coffeeStores = await fetchCoffeeStores()
+
   return {
     props: {
-      coffeeStores: coffeeStoresData,
+      coffeeStores: coffeeStores,
     }, // will be passed to the page component as props
   }
 }
@@ -49,15 +52,18 @@ export default function Home(props) {
 
         {props.coffeeStores.length > 0 && (
           <>
-            <h2 className={styles.heading2}>Toronto Stores</h2>
+            <h2 className={styles.heading2}>Akron Stores</h2>
             <div className={styles.cardLayout}>
               {props.coffeeStores.map((store) => {
                 return (
                   <Card
-                    key={store.id}
+                    key={store.fsq_id}
                     name={store.name}
-                    imgUrl={store.imgUrl}
-                    href={`/coffee-store/${store.id}`}
+                    imgUrl={
+                      store.imgUrl ||
+                      "https://images.unsplash.com/photo-1498804103079-a6351b050096?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2468&q=80"
+                    }
+                    href={`/coffee-store/${store.fsq_id}`}
                   />
                 )
               })}

@@ -4,25 +4,27 @@ import Link from "next/link"
 import Image from "next/image"
 import cls from "classnames"
 import styles from "../../styles/coffee-store.module.css"
-import coffeeStoresData from "../../data/coffee-stores.json"
+// import coffeeStoresData from "../../data/coffee-stores.json"
+import { fetchCoffeeStores } from "../../lib/coffee-stores"
 
 export async function getStaticProps(staticProps) {
   const params = staticProps.params
-
+  const coffeeStores = await fetchCoffeeStores()
   return {
     props: {
-      coffeeStores: coffeeStoresData.find((store) => {
-        return store.id.toString() === params.id
+      coffeeStores: coffeeStores.find((store) => {
+        return store.fsq_id.toString() === params.id
       }),
     }, // will be passed to the page component as props
   }
 }
 
 export async function getStaticPaths() {
-  const paths = coffeeStoresData.map((store) => {
+  const coffeeStores = await fetchCoffeeStores()
+  const paths = coffeeStores.map((store) => {
     return {
       params: {
-        id: store.id.toString(),
+        id: store.fsq_id.toString(),
       },
     }
   })
@@ -41,7 +43,7 @@ const CoffeeStore = (props) => {
     return <div>Loading...</div>
   }
 
-  const { address, name, neighborhood, imgUrl } = props.coffeeStores
+  const { location, name, imgUrl } = props.coffeeStores
 
   const handleUpvoteButton = () => {
     console.log("Upvote button clicked!")
@@ -64,7 +66,10 @@ const CoffeeStore = (props) => {
           </div>
 
           <Image
-            src={imgUrl}
+            src={
+              imgUrl ||
+              "https://images.unsplash.com/photo-1498804103079-a6351b050096?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2468&q=80"
+            }
             width={600}
             height={360}
             className={styles.storeImg}
@@ -80,7 +85,7 @@ const CoffeeStore = (props) => {
               height={24}
               alt="Location Icon"
             />
-            <p className={styles.text}>{address}</p>
+            <p className={styles.text}>{location.address}</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image
@@ -89,7 +94,7 @@ const CoffeeStore = (props) => {
               height={24}
               alt="Neighvorhood Icon"
             />
-            <p className={styles.text}>{neighborhood}</p>
+            <p className={styles.text}>{location.neighborhood[0]}</p>
           </div>
           <div className={styles.iconWrapper}>
             <Image
@@ -103,7 +108,7 @@ const CoffeeStore = (props) => {
 
           <button
             className={styles.upvoteButton}
-            onclick={handleUpvoteButton}
+            onClick={handleUpvoteButton}
           >
             Add to Favorites
           </button>
