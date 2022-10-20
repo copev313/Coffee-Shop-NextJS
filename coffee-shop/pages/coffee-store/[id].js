@@ -4,7 +4,6 @@ import Link from "next/link"
 import Image from "next/image"
 import cls from "classnames"
 import styles from "../../styles/coffee-store.module.css"
-// import coffeeStoresData from "../../data/coffee-stores.json"
 import { fetchCoffeeStores } from "../../lib/coffee-stores"
 
 export async function getStaticProps(staticProps) {
@@ -13,7 +12,7 @@ export async function getStaticProps(staticProps) {
   return {
     props: {
       coffeeStores: coffeeStores.find((store) => {
-        return store.fsq_id.toString() === params.id
+        return store.id.toString() === params.id
       }),
     }, // will be passed to the page component as props
   }
@@ -24,7 +23,7 @@ export async function getStaticPaths() {
   const paths = coffeeStores.map((store) => {
     return {
       params: {
-        id: store.fsq_id.toString(),
+        id: store.id.toString(),
       },
     }
   })
@@ -43,7 +42,7 @@ const CoffeeStore = (props) => {
     return <div>Loading...</div>
   }
 
-  const { location, name, imgUrl } = props.coffeeStores
+  const { name, address, neighborhood, imgUrl } = props.coffeeStores
 
   const handleUpvoteButton = () => {
     console.log("Upvote button clicked!")
@@ -58,7 +57,7 @@ const CoffeeStore = (props) => {
         <div className={styles.col1}>
           <div className={styles.backToHomeLink}>
             <Link href="/">
-              <a>Back to home</a>
+              <a>{"<- Back to home"}</a>
             </Link>
           </div>
           <div className={styles.nameWrapper}>
@@ -78,24 +77,30 @@ const CoffeeStore = (props) => {
         </div>
 
         <div className={cls("glass", styles.col2)}>
-          <div className={styles.iconWrapper}>
-            <Image
-              src="/icons/places.svg"
-              width={24}
-              height={24}
-              alt="Location Icon"
-            />
-            <p className={styles.text}>{location.address}</p>
-          </div>
-          <div className={styles.iconWrapper}>
-            <Image
-              src="/icons/nearMe.svg"
-              width={24}
-              height={24}
-              alt="Neighvorhood Icon"
-            />
-            <p className={styles.text}>{location.neighborhood[0]}</p>
-          </div>
+          {address && (
+            <div className={styles.iconWrapper}>
+              <Image
+                src="/icons/places.svg"
+                width={24}
+                height={24}
+                alt="Location Icon"
+              />
+              <p className={styles.text}>{address}</p>
+            </div>
+          )}
+
+          {neighborhood && (
+            <div className={styles.iconWrapper}>
+              <Image
+                src="/icons/nearMe.svg"
+                width={24}
+                height={24}
+                alt="Neighborhood Icon"
+              />
+              <p className={styles.text}>{neighborhood}</p>
+            </div>
+          )}
+
           <div className={styles.iconWrapper}>
             <Image
               src="/icons/star.svg"
